@@ -1,0 +1,16 @@
+{
+  "name": "ft_linear_regression",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "serve"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^11.1.0"
+  }
+}
