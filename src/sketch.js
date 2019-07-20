@@ -1,13 +1,17 @@
 let table;
 let img;
 let circlesArray;
-const graphPosX = 150;
-const graphPosY = 200;
+const graphOriginX = 100;
+const graphOriginY = innerHeight - 100;
+const graphCoefX = 200;
+const graphCoefY = 25;
+const maxX = innerWidth - 150;
+const maxY = 115;
 
 function setup() {
   //add input load file
   input = createFileInput(handleFile);
-  input.position(0, 0);
+  input.position(innerWidth / 2 - 100, 95);
 
   
   createCanvas(innerWidth, innerHeight);
@@ -27,6 +31,8 @@ function loadFile(file) {
 */
 
 function handleFile(file) {
+    img = null;
+  table = null;
   print(file);  
   if (file.type === 'image') {
     img = createImg(file.data);
@@ -34,10 +40,6 @@ function handleFile(file) {
   } else if (file.type === 'application' && file.subtype === 'vnd.ms-excel') {
     console.log('fseqgsqfgfqgqfdg');
     table = loadTable(file.data, loadTableOn, 'csv', 'header');
-  }
-  else {
-    img = null;
-    table = null;
   }
 }
 
@@ -47,7 +49,6 @@ function loadTableOn() {
   print(table.getColumnCount() + ' total columns in table');
   print(table.getColumn('km'));
   print(table.getColumn('price'));
-  //["Goat", "Leopard", "Zebra"]
 
   //cycle through the table
   for (let r = 0; r < table.getRowCount(); r++){
@@ -59,20 +60,22 @@ function loadTableOn() {
 
 function draw() {
   background(255);
+  stroke('black');
+  fill('blue');
   textSize(30);
-  text('tesgrgsfg', innerWidth / 2, 20);
-  
+  text('FT_LINEAR_REGRESSION', innerWidth / 2 - 8*28, 30);
+  text('BY DBOUDY', innerWidth / 2 - 4*28, 70);
+  fill('black');
+  line(graphOriginX, graphOriginY, maxX, graphOriginY);
+  line(graphOriginX,graphOriginY, graphOriginX, maxY);
   if (img) {
-    image(img, 0, 0, width, height);
+    image(img, graphOriginX, maxY, innerWidth - 200 , innerHeight - 200);
   }
   else if (table) {
-    console.log('table create');
     fill('red');
     stroke('red');
     for (let circleIndex in circlesArray) {
-      circle(circlesArray[circleIndex][0]/200 + graphPosX, circlesArray[circleIndex][1]/100 * 4 + graphPosY, 5);
+      circle(circlesArray[circleIndex][0]/graphCoefX + graphOriginX, (-(circlesArray[circleIndex][1]/graphCoefY) + graphOriginY), 5);
     }
-    line(30, 20, 85, 75);
   }
-
 }
