@@ -1,28 +1,78 @@
 let table;
-
-function preload() {
-  table = loadTable('data/data.csv', 'csv', 'header');
-}
+let img;
+let circlesArray;
+const graphPosX = 150;
+const graphPosY = 200;
 
 function setup() {
-print(table.getRowCount() + ' total rows in table');
-  print(table.getColumnCount() + ' total columns in table');
+  //add input load file
   input = createFileInput(handleFile);
   input.position(0, 0);
-  print(table.getColumn('namekm,price'));
+
+  
+  createCanvas(innerWidth, innerHeight);
+  background(150);
+  //add button load file
+  /*
+  button = createButton('load');
+  button.position(19, 19);
+  button.mousePressed(loadFile);
+  */
+}
+
+/*
+function loadFile(file) {
+  
+}
+*/
+
+function handleFile(file) {
+  print(file);  
+  if (file.type === 'image') {
+    img = createImg(file.data);
+    img.hide();
+  } else if (file.type === 'application' && file.subtype === 'vnd.ms-excel') {
+    console.log('fseqgsqfgfqgqfdg');
+    table = loadTable(file.data, loadTableOn, 'csv', 'header');
+  }
+  else {
+    img = null;
+    table = null;
+  }
+}
+
+function loadTableOn() {
+  circlesArray = [];
+  print(table.getRowCount() + ' total rows in table');
+  print(table.getColumnCount() + ' total columns in table');
+  print(table.getColumn('km'));
+  print(table.getColumn('price'));
   //["Goat", "Leopard", "Zebra"]
 
   //cycle through the table
-  for (let r = 0; r < table.getRowCount(); r++)
-    for (let c = 0; c < table.getColumnCount(); c++) {
-      print(table.getString(r, c));
-    }
+  for (let r = 0; r < table.getRowCount(); r++){
+    circlesArray.push([table.getString(r, 'km'),table.getString(r, 'price')])
+      //print("km : " + table.getString(r, 'km'));
+      //print("price : " + table.getString(r, 'price'));
+  }
 }
 
 function draw() {
-  ellipse(50, 50, 80, 80);
   background(255);
+  textSize(30);
+  text('tesgrgsfg', innerWidth / 2, 20);
+  
   if (img) {
     image(img, 0, 0, width, height);
-  } 
+  }
+  else if (table) {
+    console.log('table create');
+    fill('red');
+    stroke('red');
+    for (let circleIndex in circlesArray) {
+      circle(circlesArray[circleIndex][0]/200 + graphPosX, circlesArray[circleIndex][1]/100 * 4 + graphPosY, 5);
+    }
+    line(30, 20, 85, 75);
+  }
+
 }
