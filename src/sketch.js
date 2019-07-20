@@ -17,12 +17,16 @@ let theta0 = 0;
 let theta1 = 0;
 let prediction = null;
 let inputState = false;
+let bg = null;
+//let heartY = 0;
 
 function setup() {
   //add input load file
+  createCanvas(innerWidth, innerHeight);
+  bg = loadImage('assets/car_background.jpg');
   input = createFileInput(handleFile);
   input.position(innerWidth / 2 - 100, 95);
-  let inp = createInput('0');
+  let inp = createInput('Mileage');
   inp.input(myInputEvent);
   inp.position(innerWidth / 2 - 160, 130);
   let priceButton = createButton('predict a price');
@@ -34,7 +38,6 @@ function setup() {
   let resetButton = createButton('Reset Data');
   resetButton.position(innerWidth - 100, 50);
   resetButton.mousePressed(resetData);
-  createCanvas(innerWidth, innerHeight);
 }
 
 function handleFile(file) {
@@ -71,16 +74,18 @@ function loadTableOn() {
   //cycle through the table
   for (let r = 0; r < table.getRowCount(); r++){
     if (parseInt(table.getString(r, 'km')) > maxKm)
-      maxKm = table.getString(r, 'km');
-    if (parseInt(table.getString(r, 'price')) > maxPrice)
-      maxPrice = table.getString(r, 'price');
+      maxKm = parseInt(table.getString(r, 'km')) *1.1;
+    if (parseInt(table.getString(r, 'price'))> maxPrice)
+      maxPrice = parseInt(table.getString(r, 'price')) *1.1;
     circlesArray.push([table.getString(r, 'km'), table.getString(r, 'price')])
   }
 }
 
 function draw() {
+
   //clean
-  background(255);
+  clear();
+  background(bg);
   textSize(30);
   stroke('black');
   fill('blue');
@@ -92,14 +97,18 @@ function draw() {
   line(graphOriginX,graphOriginY, graphOriginX, maxY);
   //dislay file img
   if (img) {
-    image(img, graphOriginX, maxY, innerWidth - 200 , innerHeight - 200);
+    image(img, graphOriginX, maxY, ecartX , ecartY);
   }
   //dislay linear graph
   else if (table) {
+
     textSize(15);
     text('0', graphOriginX -16, graphOriginY + 16);
     text('price\n' + maxPrice, graphOriginX - 40, maxY);
     text('km\n' + maxKm, maxX + 10, graphOriginY);
+    fill('white');
+    stroke('white');
+    rect(graphOriginX, maxY,ecartX, ecartY);
     fill('red');
     stroke('red');
     for (let circleIndex in circlesArray) {
@@ -131,8 +140,12 @@ function draw() {
     textSize(17);
     fill('red');
     stroke('red');
-    text("Please enter a number", innerWidth / 2 + 120, 138);
-  }
+    text("Please enter a valid mileage", innerWidth / 2 + 120, 138);
+  }/*
+  heartY++;
+  if (heartY > innerHeight) {
+    heartY = 0;
+  }*/
 }
 
 function predictAPrice() {
@@ -163,4 +176,16 @@ function resetData() {
   linearLineY1 = 0;
   linearLineX2 = 0;
   linearLineY2 = 0;
+}
+
+function costFunction()
+{
+  let sum = 0;
+  for (let data in trainingSet) {
+    let x =  trainingSet[data][0];
+    let y = trainingSet[data][1];
+      let res = theta1 + (theta2 * x) - y;
+      sum += res * res;
+    }
+  return Math.round((sum / (trainingSet.length * 2)) * 1000) / 1000;
 }
