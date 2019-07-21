@@ -133,44 +133,47 @@ function resetTraining() {
 function predictAPrice() {
   console.log("PREDICT !!!! " + inputMileage);
   if(!inputState && inputMileage)
-    prediction = theta0 + (theta1 * parseInt(inputMileage));
+    prediction = Math.round((theta0 + (theta1 * parseInt(inputMileage)))*1000)/1000;
   else
     prediction = null;
 }
 
 //Second program : main algo linear_regression to find best parameter to theta0 and theta1
 function trainingProgram() {
-  if (datasArray) {
+  if (datasArray && table) {
     resetTraining();
     console.log("training !!!!");
-    theta0 = floor(random(100));
-    theta1 = floor(random(100));
-    linearLineX1 = 190;
-    linearLineY1 = 200;
-    linearLineX2 = 2000;
-    linearLineY2 = 1200;
+    regression_line(table.getColumn('km'),table.getColumn('price'))
+    //theta0 = floor(random(100));
+    //theta1 = floor(random(100));
+    linearLineX1 = 0;
+    linearLineY1 = linearLineX1 * theta1 + theta0;
+    linearLineX2 = maxKm * 1.01;
+    linearLineY2 = linearLineX2 * theta1 + theta0;
+        console.log("theta0" + theta0 + "theta1="+theta1 +" | x1:"+linearLineX1 + "| y1 : "+ linearLineY1 + "|x2 : " + linearLineX2+ " y2" + linearLineY2);
   }
   else
     console.log("no data array");
 }
 
 function regression_line(x,y){
-  let result = [];
+  //let result = [];
   let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
   let n = x.length;
-  
+  console.log("x :" +x);
+  console.log("y :" +y);
   for (let i in x) {
-    sumX += x[i];
-    sumY += y[i];
-    sumXX += x[i]*x[i];
-    sumXY += x[i]*y[i];
+    sumX += parseInt(x[i]);
+    sumY += parseInt(y[i]);
+    sumXX += parseInt(x[i]*x[i]);
+    sumXY += parseInt(x[i]*y[i]);
   }
-  
-  let a = ((sumXX * sumY) - (sumX*sumXY)) / ((n * sumXX) - (sumX * sumX));
-  let b = ((n * sumXY) - (sumX * sumY)) / ((n * sumXX) - (sumX * sumX));
+  console.log("sumX : " + sumX);
+  theta0 = Math.round((((sumXX * sumY) - (sumX*sumXY)) / ((n * sumXX) - (sumX * sumX)))*1000)/1000;
+  theta1 = Math.round((((n * sumXY) - (sumX * sumY)) / ((n * sumXX) - (sumX * sumX)))*1000)/1000;
 
-  result = [Math.round(a*10000)/10000, Math.round(b*10000)/10000];
-  return result;
+  //result = [Math.round(a*10000)/10000, Math.round(b*10000)/10000];
+  //return result;
 }
 //bonus : calcul the precision of the algorithm
 function costFunction()
@@ -247,8 +250,10 @@ function draw() {
     }
     fill('green');
     stroke('green');
-    //to do define theta0 et theta1
-    line(linearLineX1, linearLineY1, linearLineX2, linearLineY2);
+    line((ecartX *linearLineX1)/maxKm + graphOriginX, 
+      graphOriginY - (ecartY * linearLineY1/maxPrice),
+      (ecartX *linearLineX2)/maxKm + graphOriginX,
+      graphOriginY - (ecartY * linearLineY2/maxPrice));
   } 
   //message error if no data
   else {
@@ -262,7 +267,7 @@ function draw() {
     textSize(17);
     fill('brown');
     stroke('brown');
-    text("Estimate price is => '" + prediction + "' <3 !", innerWidth / 2 + 120, 138);
+    text("Estimate price is => '" + prediction + "'.", innerWidth / 2 + 120, 138);
   }
   //display error message on mileage
   else if (inputState) {
