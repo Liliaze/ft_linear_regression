@@ -96,6 +96,104 @@ function loadTableOn() {
   }
 }
 
+
+function resetData() {
+  console.log("RESET !!!!");
+  file = null;
+  img = null;
+  table = null;
+  inp.value('Enter a mileage');
+  input.value('');
+  resetSubData();
+}
+
+function resetSubData() {
+  datasArray = [];
+  maxPrice = 0;
+  maxKm = 0;
+  prediction = null;
+  inputMileage = null;
+  inputState = false;
+  inp.value('Enter a mileage');
+  input.value('');
+  linearLineX1 = 0;
+  linearLineY1 = 0;
+  linearLineX2 = 0;
+  linearLineY2 = 0;
+  estimateCost = null;
+}
+
+function resetTraining() {
+  console.log("RESET THETA !!!!");
+  theta0 = 0;
+  theta1 = 0;
+}
+
+//First program : gives a price prediction according to mileage 
+function predictAPrice() {
+  console.log("PREDICT !!!! " + inputMileage);
+  if(!inputState && inputMileage)
+    prediction = theta0 + (theta1 * parseInt(inputMileage));
+  else
+    prediction = null;
+}
+
+//Second program : main algo linear_regression to find best parameter to theta0 and theta1
+function trainingProgram() {
+  if (datasArray) {
+    resetTraining();
+    console.log("training !!!!");
+    theta0 = floor(random(100));
+    theta1 = floor(random(100));
+    linearLineX1 = 190;
+    linearLineY1 = 200;
+    linearLineX2 = 2000;
+    linearLineY2 = 1200;
+  }
+  else
+    console.log("no data array");
+}
+
+function regression_line(x,y){
+  let result = [];
+  let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
+  let n = x.length;
+  
+  for (let i in x) {
+    sumX += x[i];
+    sumY += y[i];
+    sumXX += x[i]*x[i];
+    sumXY += x[i]*y[i];
+  }
+  
+  let a = ((sumXX * sumY) - (sumX*sumXY)) / ((n * sumXX) - (sumX * sumX));
+  let b = ((n * sumXY) - (sumX * sumY)) / ((n * sumXX) - (sumX * sumX));
+
+  result = [Math.round(a*10000)/10000, Math.round(b*10000)/10000];
+  return result;
+}
+//bonus : calcul the precision of the algorithm
+function costFunction()
+{
+  if (datasArray) {
+    let sum = 0;
+    for (let data in datasArray) {
+      let x =  datasArray[data][0];
+      let y = datasArray[data][1];
+        let res = theta0 + (theta1 * x) - y;
+        sum += res * res;
+      }
+    estimateCost = Math.round((sum / (table.getRowCount() * 2)) * 1000) / 1000;
+  }
+  else
+    console.log('No load data');
+}
+
+//Bonus : interface to load, change and display the data of a csv file, 
+// display the 'linear regression' found by the program, 
+// get an estimate of the selling price on demand,
+// get an estimate of the effectiveness of the algorithm on the data in progress
+// and restore some live data.. 
 function draw() {
 
   textSize(30);
@@ -184,74 +282,4 @@ function draw() {
   if (heartY > innerHeight) {
     heartY = 0;
   }*/
-}
-
-function predictAPrice() {
-  console.log("PREDICT !!!! " + inputMileage);
-  if(!inputState && inputMileage)
-    prediction = theta0 + (theta1 * parseInt(inputMileage));
-  else
-    prediction = null;
-}
-
-function trainingProgram() {
-  if (datasArray) {
-    resetTraining();
-    console.log("training !!!!");
-    theta0 = floor(random(100));
-    theta1 = floor(random(100));
-    linearLineX1 = 190;
-    linearLineY1 = 200;
-    linearLineX2 = 2000;
-    linearLineY2 = 1200;
-  }
-  else
-    console.log("no data array");
-}
-
-function resetData() {
-  console.log("RESET !!!!");
-  file = null;
-  img = null;
-  table = null;
-  inp.value('Enter a mileage');
-  input.value('');
-  resetSubData();
-}
-
-function resetSubData() {
-  datasArray = [];
-  maxPrice = 0;
-  maxKm = 0;
-  prediction = null;
-  inputMileage = null;
-  inputState = false;
-  inp.value('Enter a mileage');
-  input.value('');
-  linearLineX1 = 0;
-  linearLineY1 = 0;
-  linearLineX2 = 0;
-  linearLineY2 = 0;
-  estimateCost = null;
-}
-function resetTraining() {
-  console.log("RESET THETA !!!!");
-  theta0 = 0;
-  theta1 = 0;
-}
-
-function costFunction()
-{
-  if (datasArray) {
-    let sum = 0;
-    for (let data in datasArray) {
-      let x =  datasArray[data][0];
-      let y = datasArray[data][1];
-        let res = theta0 + (theta1 * x) - y;
-        sum += res * res;
-      }
-    estimateCost = Math.round((sum / (table.getRowCount() * 2)) * 1000) / 1000;
-  }
-  else
-    console.log('No load data');
 }
