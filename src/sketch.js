@@ -1,3 +1,7 @@
+/*
+** TO DO : Refactor all code and delete global variable
+*/
+
 let table = null;
 let img;
 let datasArray;
@@ -142,33 +146,43 @@ function predictAPrice() {
 function trainingProgram() {
   if (datasArray && table) {
     resetTraining();
-    console.log("training !!!!");
+    //console.log("training !!!!");
     regression_line(table.getColumn('km'),table.getColumn('price'))
+    
+    /*
+     ** TO DO : Call Gradient Descent
+     */
+
     //theta0 = floor(random(100));
     //theta1 = floor(random(100));
     linearLineX1 = 0;
     linearLineY1 = linearLineX1 * theta1 + theta0;
     linearLineX2 = maxKm * 1.01;
     linearLineY2 = linearLineX2 * theta1 + theta0;
-        console.log("theta0" + theta0 + "theta1="+theta1 +" | x1:"+linearLineX1 + "| y1 : "+ linearLineY1 + "|x2 : " + linearLineX2+ " y2" + linearLineY2);
+        //console.log("theta0" + theta0 + "theta1="+theta1 +" | x1:"+linearLineX1 + "| y1 : "+ linearLineY1 + "|x2 : " + linearLineX2+ " y2" + linearLineY2);
   }
   else
     console.log("no data array");
 }
 
+/*
+ ** TO DO :
+ ** Function Gradient Descent
+*/
+
 function regression_line(x,y){
   //let result = [];
   let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
   let n = x.length;
-  console.log("x :" +x);
-  console.log("y :" +y);
+  //console.log("x :" +x);
+  //console.log("y :" +y);
   for (let i in x) {
     sumX += parseInt(x[i]);
     sumY += parseInt(y[i]);
     sumXX += parseInt(x[i]*x[i]);
     sumXY += parseInt(x[i]*y[i]);
   }
-  console.log("sumX : " + sumX);
+  //console.log("sumX : " + sumX);
   theta0 = Math.round((((sumXX * sumY) - (sumX*sumXY)) / ((n * sumXX) - (sumX * sumX)))*1000)/1000;
   theta1 = Math.round((((n * sumXY) - (sumX * sumY)) / ((n * sumXX) - (sumX * sumX)))*1000)/1000;
 
